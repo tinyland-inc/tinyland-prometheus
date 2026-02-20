@@ -1,12 +1,12 @@
 /**
- * @tinyland-inc/tinyland-prometheus
+ * @tummycrypt/tinyland-prometheus
  *
  * Prometheus-compatible metrics registry with counters, gauges, and histograms.
  * Exports metrics in Prometheus text exposition format for scraping.
  *
  * @example
  * ```typescript
- * import { incrementCounter, setGauge, observeHistogram, exportMetrics } from '@tinyland-inc/tinyland-prometheus';
+ * import { incrementCounter, setGauge, observeHistogram, exportMetrics } from '@tummycrypt/tinyland-prometheus';
  *
  * incrementCounter('http_requests_total', { method: 'GET', status: '200' });
  * setGauge('active_connections', 42);
