@@ -8,9 +8,9 @@ describe('MetricsRegistry', () => {
     registry = new MetricsRegistry();
   });
 
-  // ---------------------------------------------------------------------------
-  // Counter Operations
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('incrementCounter', () => {
     it('should create a counter with default increment of 1', () => {
       registry.incrementCounter('http_requests_total');
@@ -92,7 +92,7 @@ describe('MetricsRegistry', () => {
       registry.incrementCounter('req', { z: '1', a: '2' });
       registry.incrementCounter('req', { a: '2', z: '1' });
       const output = registry.export();
-      // Both calls should map to the same label key, so value should be 2
+      
       expect(output).toContain('req{a="2",z="1"} 2');
     });
 
@@ -106,9 +106,9 @@ describe('MetricsRegistry', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Gauge Operations
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('setGauge', () => {
     it('should set a gauge value', () => {
       registry.setGauge('temperature', 36.6);
@@ -185,15 +185,15 @@ describe('MetricsRegistry', () => {
       registry.setGauge('disk', 90, { mount: '/' });
       const output = registry.export();
       expect(output).toContain('disk{mount="/"} 90');
-      // The old value should not appear
+      
       const matches = output.match(/disk\{mount="\/"\}/g);
       expect(matches).toHaveLength(1);
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Histogram Operations
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('observeHistogram', () => {
     it('should record a histogram observation with default buckets', () => {
       registry.observeHistogram('request_duration', 0.05);
@@ -206,7 +206,7 @@ describe('MetricsRegistry', () => {
     it('should use default bucket boundaries', () => {
       registry.observeHistogram('latency', 0.05);
       const output = registry.export();
-      // Default buckets: 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10
+      
       expect(output).toContain('latency_bucket{le="0.005"} 0');
       expect(output).toContain('latency_bucket{le="0.01"} 0');
       expect(output).toContain('latency_bucket{le="0.025"} 0');
@@ -230,7 +230,7 @@ describe('MetricsRegistry', () => {
       registry.observeHistogram('duration', 0.2);
       registry.observeHistogram('duration', 0.3);
       const output = registry.export();
-      // 0.1 + 0.2 + 0.3 = 0.6000000000000001 (floating point)
+      
       expect(output).toMatch(/duration_sum 0\.6/);
     });
 
@@ -249,9 +249,9 @@ describe('MetricsRegistry', () => {
       registry.observeHistogram('size', 7, buckets);
       registry.observeHistogram('size', 15, buckets);
       const output = registry.export();
-      expect(output).toContain('size_bucket{le="1"} 1');   // 0.5
-      expect(output).toContain('size_bucket{le="5"} 2');   // 0.5, 3
-      expect(output).toContain('size_bucket{le="10"} 3');  // 0.5, 3, 7
+      expect(output).toContain('size_bucket{le="1"} 1');   
+      expect(output).toContain('size_bucket{le="5"} 2');   
+      expect(output).toContain('size_bucket{le="10"} 3');  
       expect(output).toContain('size_bucket{le="+Inf"} 4');
     });
 
@@ -320,10 +320,10 @@ describe('MetricsRegistry', () => {
         registry.observeHistogram('fill', i, buckets);
       }
       const output = registry.export();
-      // Values: 0, 1, 2, 3
-      expect(output).toContain('fill_bucket{le="1"} 2');  // 0, 1
-      expect(output).toContain('fill_bucket{le="2"} 3');  // 0, 1, 2
-      expect(output).toContain('fill_bucket{le="3"} 4');  // 0, 1, 2, 3
+      
+      expect(output).toContain('fill_bucket{le="1"} 2');  
+      expect(output).toContain('fill_bucket{le="2"} 3');  
+      expect(output).toContain('fill_bucket{le="3"} 4');  
       expect(output).toContain('fill_count 4');
       expect(output).toContain('fill_sum 6');
     });
@@ -344,9 +344,9 @@ describe('MetricsRegistry', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Label Handling
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('label handling', () => {
     it('should sort label keys alphabetically for consistent storage', () => {
       registry.incrementCounter('sorted_test', { z: 'last', a: 'first', m: 'mid' });
@@ -411,9 +411,9 @@ describe('MetricsRegistry', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Export Format
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('export', () => {
     it('should return empty string for empty registry', () => {
       const output = registry.export();
@@ -526,7 +526,7 @@ describe('MetricsRegistry', () => {
     it('should separate metric blocks with blank lines', () => {
       registry.incrementCounter('sep_counter');
       const output = registry.export();
-      // After the metric value there should be an empty line
+      
       expect(output).toContain('sep_counter 1\n');
     });
 
@@ -560,9 +560,9 @@ describe('MetricsRegistry', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Reset
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('reset', () => {
     it('should clear all counters', () => {
       registry.incrementCounter('c1');
@@ -614,9 +614,9 @@ describe('MetricsRegistry', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Edge Cases
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('edge cases', () => {
     it('should handle counter name with underscores', () => {
       registry.incrementCounter('my_app_http_requests_total');
@@ -649,7 +649,7 @@ describe('MetricsRegistry', () => {
     });
 
     it('should handle histogram with no observations after creation via export', () => {
-      // This tests that observeHistogram can be called once with 0 and export is valid
+      
       registry.observeHistogram('no_obs', 0, [1]);
       const output = registry.export();
       expect(output).toContain('no_obs_bucket{le="1"} 1');
@@ -684,7 +684,7 @@ describe('MetricsRegistry', () => {
       expect(output).toContain('many_obs_bucket{le="50"} 50');
       expect(output).toContain('many_obs_bucket{le="100"} 100');
       expect(output).toContain('many_obs_count 100');
-      // Sum should be 1+2+...+100 = 5050
+      
       expect(output).toContain('many_obs_sum 5050');
     });
 
@@ -706,7 +706,7 @@ describe('MetricsRegistry', () => {
       registry.setGauge('g', 42, { host: 'server1' });
       registry.observeHistogram('h', 0.3, [0.1, 0.5, 1], { path: '/api' });
       const output = registry.export();
-      // Verify structure
+      
       expect(output).toContain('# HELP c Counter metric');
       expect(output).toContain('# TYPE c counter');
       expect(output).toContain('c{env="prod"} 5');

@@ -14,9 +14,9 @@ describe('Convenience Functions & Singleton', () => {
     metricsRegistry.reset();
   });
 
-  // ---------------------------------------------------------------------------
-  // Module Exports
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('module exports', () => {
     it('should export MetricsRegistry class', () => {
       expect(MetricsRegistry).toBeDefined();
@@ -45,7 +45,7 @@ describe('Convenience Functions & Singleton', () => {
     });
 
     it('should export Metric type (compile-time check)', () => {
-      // This is a compile-time type check; if it compiles, the type is exported
+      
       const _typeCheck: Metric = {
         name: 'test',
         help: 'test',
@@ -78,9 +78,9 @@ describe('Convenience Functions & Singleton', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // incrementCounter convenience function
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('incrementCounter', () => {
     it('should delegate to metricsRegistry.incrementCounter', () => {
       incrementCounter('conv_counter');
@@ -134,9 +134,9 @@ describe('Convenience Functions & Singleton', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // setGauge convenience function
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('setGauge', () => {
     it('should delegate to metricsRegistry.setGauge', () => {
       setGauge('conv_gauge', 42);
@@ -183,9 +183,9 @@ describe('Convenience Functions & Singleton', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // observeHistogram convenience function
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('observeHistogram', () => {
     it('should delegate to metricsRegistry.observeHistogram', () => {
       observeHistogram('conv_hist', 0.5);
@@ -227,7 +227,7 @@ describe('Convenience Functions & Singleton', () => {
     it('should work with undefined buckets', () => {
       observeHistogram('conv_hist', 0.05, undefined);
       const output = exportMetrics();
-      // Should use default buckets
+      
       expect(output).toContain('conv_hist_bucket{le="0.05"} 1');
     });
 
@@ -245,9 +245,9 @@ describe('Convenience Functions & Singleton', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // exportMetrics convenience function
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('exportMetrics', () => {
     it('should return empty string for empty registry', () => {
       const output = exportMetrics();
@@ -292,9 +292,9 @@ describe('Convenience Functions & Singleton', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Singleton Behavior
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('singleton behavior', () => {
     it('should share state between convenience functions and direct registry access', () => {
       incrementCounter('singleton_test');
@@ -339,12 +339,12 @@ describe('Convenience Functions & Singleton', () => {
     });
   });
 
-  // ---------------------------------------------------------------------------
-  // Integration: Full Workflow
-  // ---------------------------------------------------------------------------
+  
+  
+  
   describe('integration: full workflow', () => {
     it('should support a complete metrics lifecycle', () => {
-      // Record some metrics
+      
       incrementCounter('http_requests_total', { method: 'GET', status: '200' }, 150);
       incrementCounter('http_requests_total', { method: 'POST', status: '201' }, 30);
       incrementCounter('http_requests_total', { method: 'GET', status: '404' }, 5);
@@ -356,16 +356,16 @@ describe('Convenience Functions & Singleton', () => {
 
       const output = exportMetrics();
 
-      // Verify counters
+      
       expect(output).toContain('http_requests_total{method="GET",status="200"} 150');
       expect(output).toContain('http_requests_total{method="POST",status="201"} 30');
       expect(output).toContain('http_requests_total{method="GET",status="404"} 5');
 
-      // Verify gauges
+      
       expect(output).toContain('active_connections 42');
       expect(output).toContain('memory_usage_bytes 536870912');
 
-      // Verify histogram
+      
       expect(output).toContain('request_duration_seconds_bucket{le="0.01"} 1');
       expect(output).toContain('request_duration_seconds_bucket{le="0.05"} 2');
       expect(output).toContain('request_duration_seconds_bucket{le="0.1"} 2');
@@ -383,7 +383,7 @@ describe('Convenience Functions & Singleton', () => {
     });
 
     it('should correctly handle concurrent-style label tracking', () => {
-      // Simulate what would happen in a web server recording per-route metrics
+      
       const routes = ['/api/users', '/api/posts', '/api/comments'];
       const methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
@@ -394,7 +394,7 @@ describe('Convenience Functions & Singleton', () => {
       }
 
       const output = exportMetrics();
-      // Should have 12 distinct label combinations (3 routes x 4 methods)
+      
       const requestLines = output.split('\n').filter(l => l.startsWith('http_requests{'));
       expect(requestLines).toHaveLength(12);
     });
