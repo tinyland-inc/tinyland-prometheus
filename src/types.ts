@@ -1,12 +1,12 @@
-/**
- * Prometheus Metrics Type Definitions
- *
- * Core type interfaces for the Prometheus-compatible metrics registry.
- */
 
-/**
- * Base metric descriptor.
- */
+
+
+
+
+
+
+
+
 export interface Metric {
   name: string;
   help: string;
@@ -15,17 +15,17 @@ export interface Metric {
   labels?: Record<string, string>;
 }
 
-/**
- * A single histogram bucket boundary and its observation count.
- */
+
+
+
 export interface HistogramBucket {
   le: number;
   count: number;
 }
 
-/**
- * Internal representation of a histogram metric with buckets, sum, and count.
- */
+
+
+
 export interface HistogramMetric {
   name: string;
   help: string;

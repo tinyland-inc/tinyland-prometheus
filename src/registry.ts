@@ -1,29 +1,29 @@
-/**
- * Prometheus Metrics Registry
- *
- * Provides a Prometheus-compatible metrics registry supporting counters,
- * gauges, and histograms. Metrics are exported in the Prometheus text
- * exposition format for scraping by a Prometheus server.
- */
+
+
+
+
+
+
+
 
 import type { HistogramMetric } from './types.js';
 
-/**
- * In-memory metrics registry that tracks counters, gauges, and histograms
- * and exports them in Prometheus text exposition format.
- */
+
+
+
+
 export class MetricsRegistry {
   private counters = new Map<string, Map<string, number>>();
   private gauges = new Map<string, Map<string, number>>();
   private histograms = new Map<string, HistogramMetric>();
 
-  /**
-   * Increment a counter metric.
-   *
-   * @param name - The metric name
-   * @param labels - Optional label key-value pairs
-   * @param value - The amount to increment by (default: 1)
-   */
+  
+
+
+
+
+
+
   incrementCounter(name: string, labels: Record<string, string> = {}, value = 1): void {
     const labelKey = this.getLabelKey(labels);
 
@@ -35,13 +35,13 @@ export class MetricsRegistry {
     this.counters.get(name)!.set(labelKey, current + value);
   }
 
-  /**
-   * Set a gauge metric to a specific value.
-   *
-   * @param name - The metric name
-   * @param value - The gauge value
-   * @param labels - Optional label key-value pairs
-   */
+  
+
+
+
+
+
+
   setGauge(name: string, value: number, labels: Record<string, string> = {}): void {
     const labelKey = this.getLabelKey(labels);
 
@@ -52,14 +52,14 @@ export class MetricsRegistry {
     this.gauges.get(name)!.set(labelKey, value);
   }
 
-  /**
-   * Record a histogram observation.
-   *
-   * @param name - The metric name
-   * @param value - The observed value
-   * @param buckets - Bucket boundaries (default: standard Prometheus buckets)
-   * @param labels - Optional label key-value pairs
-   */
+  
+
+
+
+
+
+
+
   observeHistogram(
     name: string,
     value: number,
@@ -84,7 +84,7 @@ export class MetricsRegistry {
     histogram.sum += value;
     histogram.count += 1;
 
-    // Update bucket counts
+    
     for (const bucket of histogram.buckets) {
       if (value <= bucket.le) {
         bucket.count += 1;
@@ -92,32 +92,32 @@ export class MetricsRegistry {
     }
   }
 
-  /**
-   * Generate a label key for internal storage. Keys are sorted for consistency.
-   */
+  
+
+
   private getLabelKey(labels: Record<string, string>): string {
     const sortedKeys = Object.keys(labels).sort();
     return sortedKeys.map(key => `${key}="${labels[key]}"`).join(',');
   }
 
-  /**
-   * Format labels for Prometheus text output.
-   */
+  
+
+
   private formatLabels(labels: Record<string, string>): string {
     const entries = Object.entries(labels);
     if (entries.length === 0) return '';
     return `{${entries.map(([k, v]) => `${k}="${v}"`).join(',')}}`;
   }
 
-  /**
-   * Export all metrics in Prometheus text exposition format.
-   *
-   * @returns A string in Prometheus text format
-   */
+  
+
+
+
+
   export(): string {
     const lines: string[] = [];
 
-    // Export counters
+    
     this.counters.forEach((labelMap, name) => {
       lines.push(`# HELP ${name} Counter metric`);
       lines.push(`# TYPE ${name} counter`);
@@ -129,7 +129,7 @@ export class MetricsRegistry {
       lines.push('');
     });
 
-    // Export gauges
+    
     this.gauges.forEach((labelMap, name) => {
       lines.push(`# HELP ${name} Gauge metric`);
       lines.push(`# TYPE ${name} gauge`);
@@ -141,14 +141,14 @@ export class MetricsRegistry {
       lines.push('');
     });
 
-    // Export histograms
+    
     this.histograms.forEach((histogram) => {
       const labelsStr = this.formatLabels(histogram.labels || {});
 
       lines.push(`# HELP ${histogram.name} Histogram metric`);
       lines.push(`# TYPE ${histogram.name} histogram`);
 
-      // Bucket counts
+      
       for (const bucket of histogram.buckets) {
         const bucketLabels = labelsStr
           ? `${labelsStr.slice(0, -1)},le="${bucket.le}"}`
@@ -156,13 +156,13 @@ export class MetricsRegistry {
         lines.push(`${histogram.name}_bucket${bucketLabels} ${bucket.count}`);
       }
 
-      // +Inf bucket
+      
       const infLabels = labelsStr
         ? `${labelsStr.slice(0, -1)},le="+Inf"}`
         : `{le="+Inf"}`;
       lines.push(`${histogram.name}_bucket${infLabels} ${histogram.count}`);
 
-      // Sum and count
+      
       lines.push(`${histogram.name}_sum${labelsStr} ${histogram.sum}`);
       lines.push(`${histogram.name}_count${labelsStr} ${histogram.count}`);
       lines.push('');
@@ -171,9 +171,9 @@ export class MetricsRegistry {
     return lines.join('\n');
   }
 
-  /**
-   * Reset all metrics, clearing counters, gauges, and histograms.
-   */
+  
+
+
   reset(): void {
     this.counters.clear();
     this.gauges.clear();
